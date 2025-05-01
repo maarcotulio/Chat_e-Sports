@@ -4,7 +4,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormSchema } from "@/schemas/auth";
-
 type FormData = z.infer<typeof loginFormSchema>;
 
 export function useLoginForm() {

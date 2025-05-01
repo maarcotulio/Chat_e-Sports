@@ -1,6 +1,7 @@
+import { prisma } from "@/lib/prisma";
 import { RegisterForm } from "../components/registerForm";
 import { registerFormSchema } from "@/schemas/auth";
-import { signIn } from "next-auth/react";
+import bcrypt from "bcryptjs";
 
 export default function Register() {
   async function registerAction(formData: FormData) {
@@ -14,19 +15,25 @@ export default function Register() {
       return null;
     }
 
-    const { email, password } = data;
+    const { email, password, name } = data;
 
-    // try {
-    //   await signIn("credentials", {
-    //     email,
-    //     password,
-    //     redirectTo: "/",
-    //   });
-    // } catch (error) {
-    //   return {
-    //     error: "Something went wrong. Try again.",
-    //   };
-    // }
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+
+    if (existingUser) {
+      return { error: "Email já cadastrado" };
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await prisma.user.create({
+      data: {
+        email,
+        password: hashedPassword,
+        name,
+      },
+    });
+
+    return { success: "Usuário criado com sucesso" };
   }
 
   return (
