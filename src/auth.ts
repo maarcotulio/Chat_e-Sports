@@ -2,23 +2,16 @@ import { loginFormSchema } from "@/schemas/auth";
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
-import GoogleProvider from "next-auth/providers/google";
 import bcrypt from "bcryptjs";
-
+import Google from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  secret: process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
   },
-  pages: {
-    signIn: "/auth/login",
-    error: "/auth/error",
-  },
+  adapter: PrismaAdapter(prisma),
   providers: [
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-    }),
+    Google,
 
     Credentials({
       credentials: {
@@ -36,7 +29,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           where: { email: data.email },
         });
 
-        if (!user) {
+        if (!user || !user.password) {
           return null;
         }
 

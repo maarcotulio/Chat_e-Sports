@@ -60,7 +60,10 @@ export function RegisterForm({
                 <Button
                   variant="outline"
                   className="w-full"
-                  onClick={() => signIn("google")}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    signIn("google");
+                  }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                     <path
