@@ -10,7 +10,7 @@ function Input({
   ...props
 }: React.ComponentProps<"input"> & { error?: string }) {
   return (
-    <div className="w-auto h-auto flex flex-col">
+    <div className="w-auto h-auto flex flex-1 flex-col">
       <input
         type={type}
         data-slot="input"
