@@ -1,18 +1,19 @@
 import { Message } from "@/@types/chat";
-import { currentUser } from "@/mock/users";
-
-import { users } from "@/mock/users";
+import { formatDate } from "@/app/utils/formatDate";
+import useStore from "@/store";
 
 export default function MessageArea({ messages }: { messages: Message[] }) {
-  const findUser = (userId: string) => {
-    return users.find((user) => user.id === userId) || currentUser;
-  };
+  if (!messages) {
+    return null;
+  }
+
+  const currentUser = useStore((state) => state.user);
 
   return (
     <div className="space-y-3">
       {messages.map((message) => {
-        const user = findUser(message.userId);
-        const isCurrentUser = user.id === currentUser.id;
+        const { user } = message;
+        const isCurrentUser = message.userId === currentUser?.id;
 
         return (
           <div
@@ -26,7 +27,7 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
                 isCurrentUser ? "flex-row-reverse" : "flex-row"
               }`}
             >
-              {!isCurrentUser && (
+              {!isCurrentUser && user?.avatar && (
                 <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-cyan-400 font-bold flex-shrink-0 mr-2">
                   {user.avatar}
                 </div>
@@ -38,7 +39,7 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
                     : "bg-gray-800 text-white rounded-tl-none"
                 }`}
               >
-                {!isCurrentUser && (
+                {!isCurrentUser && user?.name && (
                   <p className="text-xs font-medium text-cyan-400 mb-1">
                     {user.name}
                   </p>
@@ -49,7 +50,7 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
                     isCurrentUser ? "text-gray-600" : "text-gray-500"
                   } mt-1`}
                 >
-                  {message.timestamp}
+                  {formatDate(message.timestamp)}
                 </p>
               </div>
             </div>

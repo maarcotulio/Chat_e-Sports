@@ -10,8 +10,9 @@ export type Group = {
 export type Message = {
   id: string;
   content: string;
-  timestamp: string;
+  timestamp: Date;
   userId: string;
+  user?: User;
 };
 
 export type User = {

@@ -1,31 +1,46 @@
 import { signOut } from "next-auth/react";
-import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { LogOut, MoreVertical } from "lucide-react";
+import { LogOut, MoreVertical, Plus } from "lucide-react";
+import { useState } from "react";
+
+import {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DropdownMenu } from "@/components/ui/dropdown-menu";
+import { CreateGroup } from "./createGroup";
 
 export default function Options() {
+  const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+
   return (
     <div>
-      <Menu>
-        <MenuButton className="p-2 rounded-full hover:bg-gray-800 text-white">
+      <DropdownMenu>
+        <DropdownMenuTrigger className="hover:cursor-pointer">
           <MoreVertical size={20} />
-        </MenuButton>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuItem
+            onClick={() => setIsCreateGroupOpen(!isCreateGroupOpen)}
+            className="flex justify-between gap-2 hover:cursor-pointer"
+          >
+            <button className="hover:cursor-pointer">Criar grupo</button>
+            <Plus size={20} />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="flex justify-between gap-2 hover:cursor-pointer"
+            onClick={() => signOut()}
+          >
+            <button className="hover:cursor-pointer">Sair</button>
+            <LogOut size={20} />
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
 
-        <MenuItems
-          transition
-          anchor="bottom end"
-          className="w-52 origin-top-right rounded-xl border border-white/5 bg-black drop-shadow-md p-1 text-sm/6 text-white transition duration-100 ease-out [--anchor-gap:--spacing(1)] focus:outline-none data-closed:scale-95 data-closed:opacity-0"
-        >
-          <MenuItem>
-            <button
-              className="group flex w-full items-center gap-2 rounded-lg px-3 py-1.5 data-focus:bg-white/10 flex justify-between hover:cursor-pointer"
-              onClick={() => signOut()}
-            >
-              Sair
-              <LogOut size={20} />
-            </button>
-          </MenuItem>
-        </MenuItems>
-      </Menu>
+      <CreateGroup
+        isCreateGroupOpen={isCreateGroupOpen}
+        setIsCreateGroupOpen={setIsCreateGroupOpen}
+      />
     </div>
   );
 }

@@ -1,22 +1,25 @@
 "use client";
 
-import { X, Search } from "lucide-react";
+import { X, Search, Plus } from "lucide-react";
 import { useSideBar } from "./useSideBar";
 import ListGroups from "./components/listGroups";
 import { Input } from "@/app/auth/components/ui/input";
 import Image from "next/image";
 import Options from "./components/options";
+import { CreateGroup } from "./components/createGroup";
 
 export default function SideBar() {
   const {
     showSidebar,
-    mobileView,
-    setShowSidebar,
+    selectedGroup,
     handleSelectGroup,
     groups,
-    selectedGroup,
     isSearchVisible,
     setIsSearchVisible,
+    setShowSidebar,
+    mobileView,
+    isCreateGroupModalOpen,
+    setIsCreateGroupModalOpen,
   } = useSideBar();
 
   return (
@@ -61,14 +64,31 @@ export default function SideBar() {
               )}
             </div>
 
-            <ListGroups
-              groups={groups}
-              selectedGroup={selectedGroup}
-              handleSelectGroup={handleSelectGroup}
-            />
+            {groups.length > 0 ? (
+              <ListGroups
+                groups={groups}
+                selectedGroup={selectedGroup}
+                handleSelectGroup={handleSelectGroup}
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full gap-2 ">
+                <div
+                  className="rounded-full border border-gray-400 border-dashed flex items-center justify-center gap-2 p-2  flex-col hover:cursor-pointer"
+                  onClick={() => setIsCreateGroupModalOpen(true)}
+                >
+                  <Plus size={24} />
+                </div>
+                <p className="text-gray-400">Criar grupo</p>
+              </div>
+            )}
           </div>
         </>
       )}
+
+      <CreateGroup
+        isCreateGroupOpen={isCreateGroupModalOpen}
+        setIsCreateGroupOpen={setIsCreateGroupModalOpen}
+      />
     </>
   );
 }

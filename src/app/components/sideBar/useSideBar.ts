@@ -2,22 +2,22 @@
 
 import { Group, Message } from "@/@types/chat";
 import { useState, useEffect } from "react";
-import { groupMessages } from "@/mock/message";
-import { groups } from "@/mock/group";
 import useStore from "@/store";
 
 export function useSideBar() {
   const [mobileView, setMobileView] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
   const showSidebar = useStore((state) => state.showSidebar);
   const setShowSidebar = useStore((state) => state.setShowSidebar);
   const selectedGroup = useStore((state) => state.selectedGroup);
   const setSelectedGroup = useStore((state) => state.setSelectedGroup);
+  const groups = useStore((state) => state.groups);
+  const fetchGroupMessages = useStore((state) => state.fetchGroupMessages);
 
   const handleSelectGroup = (group: Group) => {
     setSelectedGroup(group);
-    setMessages(groupMessages[group.id] || []);
+    fetchGroupMessages(group.id);
 
     if (mobileView) {
       setShowSidebar(false);
@@ -41,11 +41,11 @@ export function useSideBar() {
     showSidebar,
     selectedGroup,
     setShowSidebar,
-    messages,
     handleSelectGroup,
     groups,
-    groupMessages,
     isSearchVisible,
     setIsSearchVisible,
+    isCreateGroupModalOpen,
+    setIsCreateGroupModalOpen,
   };
 }

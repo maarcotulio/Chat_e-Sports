@@ -48,7 +48,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   messages      Message[]
- 
+  groupMembers  GroupMember[]
   @@map("users")
 }
  
@@ -61,14 +61,38 @@ model VerificationToken {
   @@map("verification_tokens")
 }
 
-model Message {
+model Group {
   id        String   @id @default(uuid())
-  content   String
-  userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  name      String
+  icon      String
+  lastMessage String
   createdAt DateTime @default(now())
+  members   GroupMember[]
+  messages  Message[]
+
+  @@map("groups")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId   String
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
 
   @@map("messages")
+}
+
+model GroupMember {
+  id       String   @id @default(cuid())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   String
+  group    Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  groupId  String
+
+  @@unique([userId, groupId])
 }
 
 model Match {

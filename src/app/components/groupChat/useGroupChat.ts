@@ -2,24 +2,35 @@
 
 import { useState, useEffect } from "react";
 import useStore from "@/store";
-import { currentUser } from "@/mock/users";
-import { groupMessages } from "@/mock/message";
-import { Message } from "@/@types/chat";
+import { Message, Group } from "@/@types/chat";
 
 export default function useGroupChat() {
   const showSidebar = useStore((state) => state.showSidebar);
   const setShowSidebar = useStore((state) => state.setShowSidebar);
-  const selectedGroup = useStore((state) => state.selectedGroup);
+  const selectedGroup = useStore(
+    (state) => state.selectedGroup
+  ) as Group | null;
   const [mobileView, setMobileView] = useState(false);
+  const groupMessages = useStore((state) => state.groupMessages);
+  const fetchGroupMessages = useStore((state) => state.fetchGroupMessages);
+  const currentUser = useStore((state) => state.user);
+  useEffect(() => {
+    if (selectedGroup) {
+      fetchGroupMessages(selectedGroup.id);
+    }
+  }, [selectedGroup]);
 
   const [messages, setMessages] = useState<Message[]>(
-    selectedGroup ? groupMessages[selectedGroup.id] : []
+    selectedGroup ? groupMessages[selectedGroup.id] || [] : []
   );
-  const [messageInput, setMessageInput] = useState("");
 
   useEffect(() => {
-    setMessages(selectedGroup ? groupMessages[selectedGroup.id] : []);
-  }, [selectedGroup]);
+    if (selectedGroup) {
+      setMessages(groupMessages[selectedGroup.id] || []);
+    }
+  }, [selectedGroup, groupMessages]);
+
+  const [messageInput, setMessageInput] = useState("");
 
   useEffect(() => {
     const checkMobile = () => {
@@ -38,11 +49,8 @@ export default function useGroupChat() {
       const newMessage: Message = {
         id: `m${Date.now()}`,
         content: messageInput,
-        timestamp: new Date().toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-        userId: currentUser.id,
+        timestamp: new Date(),
+        userId: currentUser!.id,
       };
 
       setMessages([...messages, newMessage]);
