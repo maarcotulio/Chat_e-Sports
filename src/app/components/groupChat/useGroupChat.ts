@@ -2,15 +2,16 @@
 
 import { useState, useEffect } from "react";
 import useStore from "@/store";
-import { Message, Group } from "@/@types/chat";
+import { Message, Group } from "@prisma/client";
 
 export default function useGroupChat() {
+  const [mobileView, setMobileView] = useState(false);
+  const [showDetails, setShowDetails] = useState(false);
   const showSidebar = useStore((state) => state.showSidebar);
   const setShowSidebar = useStore((state) => state.setShowSidebar);
   const selectedGroup = useStore(
     (state) => state.selectedGroup
   ) as Group | null;
-  const [mobileView, setMobileView] = useState(false);
   const groupMessages = useStore((state) => state.groupMessages);
   const fetchGroupMessages = useStore((state) => state.fetchGroupMessages);
   const currentUser = useStore((state) => state.user);
@@ -44,14 +45,24 @@ export default function useGroupChat() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (messageInput.trim() && selectedGroup) {
       const newMessage: Message = {
         id: `m${Date.now()}`,
         content: messageInput,
-        timestamp: new Date(),
+        createdAt: new Date(),
+        groupId: selectedGroup.id,
         userId: currentUser!.id,
       };
+
+      await fetch("/api/messages", {
+        method: "POST",
+        body: JSON.stringify({
+          content: messageInput,
+          groupId: selectedGroup.id,
+          userId: currentUser!.id,
+        }),
+      });
 
       setMessages([...messages, newMessage]);
       setMessageInput("");
@@ -67,5 +78,7 @@ export default function useGroupChat() {
     setMessageInput,
     handleSendMessage,
     selectedGroup,
+    showDetails,
+    setShowDetails,
   };
 }

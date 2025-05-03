@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     const session = await auth();
 
@@ -10,13 +10,25 @@ export async function GET() {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
+    const userId = request.nextUrl.searchParams.get("userId");
+
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Usuário não encontrado" },
+        { status: 400 }
+      );
+    }
+
     const groups = await prisma.group.findMany({
       where: {
         members: {
           some: {
-            userId: session.user?.id,
+            userId,
           },
         },
+      },
+      include: {
+        members: true,
       },
     });
 

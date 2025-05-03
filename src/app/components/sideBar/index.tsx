@@ -35,7 +35,7 @@ export default function SideBar() {
                   width={50}
                   height={50}
                 />
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center space-x-2 justify-end">
                   <button
                     className="p-2 rounded-full hover:bg-gray-800 text-white hover:cursor-pointer"
                     onClick={() => setIsSearchVisible(!isSearchVisible)}

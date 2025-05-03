@@ -15,11 +15,13 @@ export default function ESportsChat() {
   useEffect(() => {
     const init = async () => {
       await fetchUser();
-      await fetchGroups();
+      if (user?.id) {
+        await fetchGroups(user.id);
+      }
       setIsLoading(false);
     };
     init();
-  }, []);
+  }, [fetchUser, fetchGroups, user?.id]);
 
   if (isLoading) {
     return (

@@ -49,6 +49,7 @@ model User {
   sessions      Session[]
   messages      Message[]
   groupMembers  GroupMember[]
+  groups        Group[]   @relation("GroupAdmin")
   @@map("users")
 }
  
@@ -69,6 +70,8 @@ model Group {
   createdAt DateTime @default(now())
   members   GroupMember[]
   messages  Message[]
+  admin    String
+  user     User     @relation("GroupAdmin", fields: [admin], references: [id])
 
   @@map("groups")
 }

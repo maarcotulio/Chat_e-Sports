@@ -4,8 +4,8 @@ import { Input } from "@/app/auth/components/ui/input";
 import { Send, ChevronLeft } from "lucide-react";
 import MessageArea from "./components/messageArea";
 import useGroupChat from "./useGroupChat";
-import { Group } from "@/@types/chat";
-
+import MoreDetails from "./components/moreDetails";
+import { Group } from "@prisma/client";
 export default function GroupChat() {
   const {
     mobileView,
@@ -16,6 +16,8 @@ export default function GroupChat() {
     setMessageInput,
     handleSendMessage,
     selectedGroup,
+    showDetails,
+    setShowDetails,
   } = useGroupChat();
 
   const group = selectedGroup as Group | null;
@@ -35,11 +37,16 @@ export default function GroupChat() {
                     <ChevronLeft size={20} />
                   </button>
                 )}
-                <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-100 font-bold">
-                  {group?.icon}
-                </div>
-                <div className="ml-3 flex-1">
-                  <h2 className="font-medium text-white">{group?.name}</h2>
+                <div
+                  className="flex w-full h-full items-center hover:cursor-pointer"
+                  onClick={() => setShowDetails(true)}
+                >
+                  <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-100 font-bold">
+                    {group?.icon}
+                  </div>
+                  <div className="ml-3 flex-1">
+                    <h2 className="font-medium text-white">{group?.name}</h2>
+                  </div>
                 </div>
               </div>
 
@@ -64,6 +71,11 @@ export default function GroupChat() {
                   </button>
                 </div>
               </div>
+
+              <MoreDetails
+                showDetails={showDetails}
+                setShowDetails={setShowDetails}
+              />
             </>
           )}
 
@@ -76,10 +88,20 @@ export default function GroupChat() {
           )}
         </>
       ) : (
-        <div className="flex-1 flex items-center justify-center bg-black">
-          <p className="text-gray-500">
-            Selecione um grupo para iniciar o chat
-          </p>
+        <div className="w-full h-full flex flex-col">
+          {mobileView && !showSidebar && (
+            <button
+              className="mr-2 p-2 rounded-full hover:bg-gray-800 text-white"
+              onClick={() => setShowSidebar(true)}
+            >
+              <ChevronLeft size={20} />
+            </button>
+          )}
+          <div className="flex-1 flex items-center justify-center bg-black">
+            <p className="text-gray-500">
+              Selecione um grupo para iniciar o chat
+            </p>
+          </div>
         </div>
       )}
     </div>

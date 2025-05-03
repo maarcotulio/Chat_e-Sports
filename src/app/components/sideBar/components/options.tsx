@@ -14,7 +14,7 @@ export default function Options() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
 
   return (
-    <div>
+    <div className="flex items-center space-x-2">
       <DropdownMenu>
         <DropdownMenuTrigger className="hover:cursor-pointer">
           <MoreVertical size={20} />

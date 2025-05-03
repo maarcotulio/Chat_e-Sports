@@ -1,6 +1,12 @@
-import { Message } from "@/@types/chat";
 import { formatDate } from "@/app/utils/formatDate";
+import { AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar } from "@/components/ui/avatar";
 import useStore from "@/store";
+import { Message as MessageType, User } from "@prisma/client";
+
+interface Message extends MessageType {
+  user?: User;
+}
 
 export default function MessageArea({ messages }: { messages: Message[] }) {
   if (!messages) {
@@ -27,9 +33,12 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
                 isCurrentUser ? "flex-row-reverse" : "flex-row"
               }`}
             >
-              {!isCurrentUser && user?.avatar && (
+              {!isCurrentUser && (
                 <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-cyan-400 font-bold flex-shrink-0 mr-2">
-                  {user.avatar}
+                  <Avatar>
+                    <AvatarImage src={user!.image || undefined} />
+                    <AvatarFallback>{user!.name?.charAt(0)}</AvatarFallback>
+                  </Avatar>
                 </div>
               )}
               <div
@@ -50,7 +59,7 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
                     isCurrentUser ? "text-gray-600" : "text-gray-500"
                   } mt-1`}
                 >
-                  {formatDate(message.timestamp)}
+                  {formatDate(new Date(message.createdAt))}
                 </p>
               </div>
             </div>

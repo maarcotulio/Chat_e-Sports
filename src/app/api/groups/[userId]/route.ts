@@ -20,7 +20,7 @@ export async function POST(
       return new NextResponse("Name is required", { status: 400 });
     }
 
-    const { userId } = params;
+    const { userId } = await params;
 
     const group = await prisma.group.create({
       data: {
@@ -32,6 +32,7 @@ export async function POST(
             userId: userId,
           },
         },
+        admin: userId,
       },
       include: {
         members: true,
@@ -40,7 +41,6 @@ export async function POST(
 
     return NextResponse.json(group);
   } catch (error) {
-    console.log("[GROUPS_POST]", error);
     return new NextResponse("Internal Error", { status: 500 });
   }
 }

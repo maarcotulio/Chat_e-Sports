@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Group, Message, User } from "./@types/chat";
+import { GroupMember, Group, Message, User } from "@prisma/client";
 
 export type Store = {
   showSidebar: boolean;
@@ -7,11 +7,15 @@ export type Store = {
   selectedGroup: Group | null;
   setSelectedGroup: (selectedGroup: Group | null) => void;
   groups: Group[];
-  fetchGroups: () => Promise<void>;
+  fetchGroups: (userId: string) => Promise<void>;
   groupMessages: Record<string, Message[]>;
   fetchGroupMessages: (groupId: string) => Promise<void>;
   user: User | null;
   fetchUser: () => Promise<void>;
+  members: (GroupMember & {
+    user: { id: string; name: string; image: string | null };
+  })[];
+  fetchMembers: (groupId: string) => Promise<void>;
 };
 
 const useStore = create<Store>((set) => ({
@@ -21,8 +25,8 @@ const useStore = create<Store>((set) => ({
   setSelectedGroup: (selectedGroup: Group | null) => set({ selectedGroup }),
 
   groups: [],
-  fetchGroups: async () => {
-    const response = await fetch("/api/groups");
+  fetchGroups: async (userId: string) => {
+    const response = await fetch("/api/groups?userId=" + userId);
 
     const data = await response.json();
 
@@ -48,6 +52,14 @@ const useStore = create<Store>((set) => ({
     const data = await response.json();
 
     set({ user: data });
+  },
+
+  members: [],
+  fetchMembers: async (groupId: string) => {
+    const response = await fetch(`/api/members/${groupId}`);
+    const data = await response.json();
+
+    set({ members: data });
   },
 }));
 
