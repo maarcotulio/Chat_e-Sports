@@ -1,25 +1,23 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { NextRequest } from "next/server";
 
 export async function DELETE(
-  request: Request,
-  { params }: { params: { userId: string; groupId: string } }
+  request: NextRequest,
+  context: { params: { userId: string; groupId: string } }
 ) {
-  const supabase = await createClient();
+  const { userId, groupId } = context.params;
 
+  const supabase = await createClient();
   const { error } = await supabase.auth.getUser();
 
   if (error) {
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const { userId, groupId } = await params;
-
   const group = await prisma.group.findUnique({
-    where: {
-      id: groupId,
-    },
+    where: { id: groupId },
   });
 
   if (!group) {
@@ -42,9 +40,7 @@ export async function DELETE(
   }
 
   await prisma.group.delete({
-    where: {
-      id: groupId,
-    },
+    where: { id: groupId },
   });
 
   return NextResponse.json({ message: "Group deleted" }, { status: 200 });

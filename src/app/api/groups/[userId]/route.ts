@@ -3,10 +3,12 @@ import { prisma } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 
 export async function POST(
-  req: Request,
-  { params }: { params: { userId: string } }
+  req: NextRequest,
+  context: { params: { userId: string } }
 ) {
   try {
+    const { userId } = context.params;
+
     const supabase = await createClient();
     const { error } = await supabase.auth.getUser();
 
@@ -18,21 +20,19 @@ export async function POST(
     const { name } = body;
 
     if (!name) {
-      return new NextResponse("Name is required", { status: 400 });
+      return NextResponse.json({ error: "Name is required" }, { status: 400 });
     }
-
-    const { userId } = await params;
 
     const group = await prisma.group.create({
       data: {
         name,
         lastMessage: "",
+        admin: userId,
         members: {
           create: {
-            userId: userId,
+            userId,
           },
         },
-        admin: userId,
       },
       include: {
         members: true,
@@ -41,6 +41,9 @@ export async function POST(
 
     return NextResponse.json(group);
   } catch (error) {
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
   }
 }
