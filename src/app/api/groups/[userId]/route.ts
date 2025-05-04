@@ -2,25 +2,30 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { createClient } from "@/utils/supabase/server";
 
-export async function POST(
-  req: NextRequest,
-  context: { params: { userId: string } }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const { userId } = context.params;
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split("/");
+    const userId = pathParts[pathParts.length - 1];
 
     const supabase = await createClient();
-    const { error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-    if (error) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (authError || !user) {
+      return NextResponse.json({ error: "Sem permissão" }, { status: 401 });
     }
 
     const body = await req.json();
     const { name } = body;
 
     if (!name) {
-      return NextResponse.json({ error: "Name is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Nome do grupo é obrigatório" },
+        { status: 400 }
+      );
     }
 
     const group = await prisma.group.create({
@@ -35,15 +40,17 @@ export async function POST(
         },
       },
       include: {
-        members: true,
+        members: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
     return NextResponse.json(group);
   } catch (error) {
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
+    console.error("Group creation error:", error);
+    return NextResponse.json({ error: "Erro ao criar grupo" }, { status: 500 });
   }
 }

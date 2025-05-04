@@ -2,11 +2,11 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-export async function POST(
-  request: NextRequest,
-  context: { params: { groupId: string; userId: string } }
-) {
-  const { groupId, userId } = context.params;
+export async function POST(req: NextRequest) {
+  const url = new URL(req.url);
+  const pathParts = url.pathname.split("/");
+  const userId = pathParts[pathParts.length - 3];
+  const groupId = pathParts[pathParts.length - 2];
 
   const supabase = await createClient();
   const { error } = await supabase.auth.getUser();
@@ -18,7 +18,7 @@ export async function POST(
     );
   }
 
-  const { email } = await request.json();
+  const { email } = await req.json();
 
   const user = await prisma.user.findUnique({
     where: { email },

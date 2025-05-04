@@ -77,9 +77,9 @@ export async function POST(req: Request) {
       data: { icon: avatarUrl },
     });
   } else {
-    await prisma.group.update({
-      where: { id: groupId },
-      data: { icon: avatarUrl },
+    await prisma.user.update({
+      where: { id: userId },
+      data: { image: avatarUrl },
     });
   }
 

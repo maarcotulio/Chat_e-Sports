@@ -1,34 +1,45 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { NextRequest } from "next/server";
 
-export async function GET(
-  req: Request,
-  { params }: { params: { groupId: string } }
-) {
-  const supabase = await createClient();
-  const { error } = await supabase.auth.getUser();
+export async function GET(req: NextRequest) {
+  try {
+    const url = new URL(req.url);
+    const pathParts = url.pathname.split("/");
+    const groupId = pathParts[pathParts.length - 1];
 
-  if (error) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
-  }
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
 
-  const { groupId } = await params;
+    if (authError || !user) {
+      return NextResponse.json({ error: "Sem permissão" }, { status: 401 });
+    }
 
-  const group = await prisma.groupMember.findMany({
-    where: {
-      groupId: groupId,
-    },
-    include: {
-      user: {
-        select: {
-          id: true,
-          name: true,
-          image: true,
+    const group = await prisma.groupMember.findMany({
+      where: {
+        groupId,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  return NextResponse.json(group);
+    return NextResponse.json(group);
+  } catch (error) {
+    console.error("Members fetch error:", error);
+    return NextResponse.json(
+      { error: "Erro ao buscar membros" },
+      { status: 500 }
+    );
+  }
 }
