@@ -10,7 +10,10 @@ export async function POST(
   const { error } = await supabase.auth.getUser();
 
   if (error) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json(
+      { error: "Usuário não encontrado" },
+      { status: 404 }
+    );
   }
 
   const { groupId, userId } = await params;
@@ -20,7 +23,7 @@ export async function POST(
   });
 
   if (!user) {
-    return NextResponse.json("User not found", { status: 404 });
+    return NextResponse.json("Usuário não encontrado", { status: 404 });
   }
 
   const group = await prisma.group.findUnique({
@@ -31,19 +34,19 @@ export async function POST(
   });
 
   if (!group) {
-    return NextResponse.json("Group not found", { status: 404 });
+    return NextResponse.json("Grupo não encontrado", { status: 404 });
   }
 
   const isAdmin = group.admin === userId;
 
   if (!isAdmin) {
-    return NextResponse.json("Unauthorized", { status: 401 });
+    return NextResponse.json("Não autorizado", { status: 401 });
   }
 
   const isMember = group.members.some((member) => member.userId === user.id);
 
   if (isMember) {
-    return NextResponse.json("User already in group", { status: 400 });
+    return NextResponse.json("Usuário já está no grupo", { status: 400 });
   }
 
   await prisma.groupMember.create({
@@ -53,5 +56,5 @@ export async function POST(
     },
   });
 
-  return NextResponse.json("User added to group", { status: 200 });
+  return NextResponse.json("Usuário adicionado ao grupo", { status: 200 });
 }

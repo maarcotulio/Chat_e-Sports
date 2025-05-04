@@ -22,6 +22,7 @@ export default function SideBar() {
     isCreateGroupModalOpen,
     setIsCreateGroupModalOpen,
     handleMatches,
+    handleSearch,
   } = useSideBar();
 
   return (
@@ -67,6 +68,7 @@ export default function SideBar() {
                     type="text"
                     placeholder="Pesquisar"
                     className="w-full p-2 rounded-md bg-gray-800 text-white"
+                    onChange={(e) => handleSearch(e.target.value)}
                   />
                 </div>
               )}

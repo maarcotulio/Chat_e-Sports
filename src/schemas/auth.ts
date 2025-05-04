@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const loginFormSchema = z.object({
-  email: z.string().email().min(1, "Email é obrigatório"),
+  email: z.string().email("Email inválido").min(1, "Email é obrigatório"),
   password: z
     .string()
     .nonempty("Senha é obrigatória")
@@ -10,10 +10,7 @@ export const loginFormSchema = z.object({
 
 export const registerFormSchema = z.object({
   name: z.string().nonempty("Nome é obrigatório"),
-  email: z
-    .string()
-    .nonempty("Email é obrigatório")
-    .email("Use um email válido"),
+  email: z.string().nonempty("Email é obrigatório").email("Email inválido"),
   password: z
     .string()
     .nonempty("Senha é obrigatória")

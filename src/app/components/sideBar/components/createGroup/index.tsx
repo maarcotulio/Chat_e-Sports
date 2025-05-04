@@ -10,6 +10,7 @@ import { Input } from "@/app/auth/components/ui/input";
 import { Button } from "@/app/auth/components/ui/button";
 
 import { useCreateGroup } from "./useCreateGroup";
+import { LoaderCircle } from "lucide-react";
 
 export function CreateGroup({
   isCreateGroupOpen,
@@ -18,10 +19,11 @@ export function CreateGroup({
   isCreateGroupOpen: boolean;
   setIsCreateGroupOpen: (isOpen: boolean) => void;
 }) {
-  const { groupName, setGroupName, handleCreateGroup } = useCreateGroup({
-    isCreateGroupOpen,
-    setIsCreateGroupOpen,
-  });
+  const { groupName, setGroupName, handleCreateGroup, isCreatingGroup } =
+    useCreateGroup({
+      isCreateGroupOpen,
+      setIsCreateGroupOpen,
+    });
 
   return (
     <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>
@@ -38,7 +40,13 @@ export function CreateGroup({
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
         />
-        <Button onClick={handleCreateGroup}>Criar</Button>
+        <Button onClick={handleCreateGroup} disabled={isCreatingGroup}>
+          {isCreatingGroup ? (
+            <LoaderCircle className="animate-spin" />
+          ) : (
+            "Criar"
+          )}
+        </Button>
       </DialogContent>
     </Dialog>
   );

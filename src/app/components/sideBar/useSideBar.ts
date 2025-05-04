@@ -30,6 +30,7 @@ export function useSideBar() {
   const setGroupMessages = useStore((state) => state.setGroupMessages);
   const isMatchesOpen = useStore((state) => state.isMatchesOpen);
   const setIsMatchesOpen = useStore((state) => state.setIsMatchesOpen);
+  const [filteredGroups, setFilteredGroups] = useState<Group[]>(groups);
 
   const handleSelectGroup = async (group: Group) => {
     setSelectedGroup(group);
@@ -74,18 +75,27 @@ export function useSideBar() {
     setIsMatchesOpen(!isMatchesOpen);
   };
 
+  const handleSearch = (search: string) => {
+    setFilteredGroups(
+      groups.filter((group) =>
+        group.name.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  };
+
   return {
     mobileView,
     showSidebar,
     selectedGroup,
     setShowSidebar,
     handleSelectGroup,
-    groups,
+    groups: filteredGroups.length > 0 ? filteredGroups : groups,
     isSearchVisible,
     setIsSearchVisible,
     isCreateGroupModalOpen,
     setIsCreateGroupModalOpen,
     handleMatches,
+    handleSearch,
     isLoading: isPending,
   };
 }

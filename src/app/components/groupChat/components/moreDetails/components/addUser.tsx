@@ -9,8 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import useStore from "@/store";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "react-toastify";
+
 export default function AddUser({
   showAddUser,
   setShowAddUser,
@@ -22,7 +24,7 @@ export default function AddUser({
 }) {
   const queryClient = useQueryClient();
   const userId = useStore((state) => state.user?.id);
-  const { mutate: addUser } = useMutation({
+  const { mutate: addUser, isPending: isAddingUser } = useMutation({
     mutationKey: ["addUser"],
     mutationFn: async () => {
       const response = await fetch(
@@ -32,12 +34,15 @@ export default function AddUser({
           body: JSON.stringify({ email }),
         }
       );
+      const data = await response.json();
+
       if (response.ok) {
-        toast.success("Membro adicionado com sucesso");
+        toast.success(data);
       } else {
-        toast.error("Erro ao adicionar membro");
+        toast.error(data);
       }
-      return response.json();
+
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["groups"] });
@@ -67,13 +72,14 @@ export default function AddUser({
             onChange={(e) => setEmail(e.target.value)}
           />
           <Button
+            disabled={isAddingUser}
             onClick={() => {
               handleAddUser();
               setShowAddUser(false);
               setShowDetails(false);
             }}
           >
-            Adicionar
+            {isAddingUser ? <Loader2 className="animate-spin" /> : "Adicionar"}
           </Button>
         </div>
       </DialogContent>

@@ -20,7 +20,7 @@ export function useMoreDetails({
     queryFn: () => fetchMembers(),
   });
 
-  const { mutate: deleteGroup } = useMutation({
+  const { mutate: deleteGroup, isPending: isDeletingGroup } = useMutation({
     mutationFn: (groupId: string) => {
       return fetch(`/api/groups/${user?.id}/${groupId}`, {
         method: "DELETE",
@@ -34,6 +34,14 @@ export function useMoreDetails({
       queryClient.invalidateQueries({
         queryKey: ["groupMessages", selectedGroup?.id],
       });
+
+      if (isAdmin) {
+        toast.success("Grupo deletado com sucesso");
+      } else {
+        toast.success("Você saiu do grupo com sucesso");
+      }
+
+      setShowDetails(false);
     },
   });
 
@@ -53,14 +61,6 @@ export function useMoreDetails({
 
   const deleteOrLeaveGroup = async (groupId: string) => {
     deleteGroup(groupId);
-
-    if (isAdmin) {
-      toast.success("Grupo deletado com sucesso");
-    } else {
-      toast.success("Você saiu do grupo com sucesso");
-    }
-
-    setShowDetails(false);
   };
 
   const fetchMembers = async () => {
@@ -77,5 +77,6 @@ export function useMoreDetails({
     showAddUser,
     setShowAddUser,
     deleteOrLeaveGroup,
+    isDeletingGroup,
   };
 }

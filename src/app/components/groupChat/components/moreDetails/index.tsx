@@ -26,9 +26,19 @@ export default function MoreDetails({
     showAddUser,
     setShowAddUser,
     deleteOrLeaveGroup,
+    isDeletingGroup,
   } = useMoreDetails({
     setShowDetails,
   });
+
+  if (isDeletingGroup) {
+    return (
+      <div className="flex items-center justify-center bg-gray-900/80 h-full w-full absolute top-0 left-0 flex-col gap-2">
+        <Loader2 className="animate-spin" size={28} />
+        <p className="text-gray-100">Aguarde...</p>
+      </div>
+    );
+  }
 
   return (
     <>

@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 import { LoaderCircle } from "lucide-react";
 import { useRegisterForm } from "./useRegisterForm";
 import { signIn } from "next-auth/react";
+import { redirect } from "next/navigation";
 
 export function RegisterForm({
   className,
@@ -38,7 +39,7 @@ export function RegisterForm({
 
       if (response && "success" in response) {
         toast.success(response.success);
-        window.location.href = "/auth/login";
+        redirect("/auth/login");
       }
     },
     null

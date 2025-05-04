@@ -12,7 +12,7 @@ export function useCreateGroup({
 }) {
   const [groupName, setGroupName] = useState("");
   const queryClient = useQueryClient();
-  const { mutate: createGroup } = useMutation({
+  const { mutate: createGroup, isPending: isCreatingGroup } = useMutation({
     mutationKey: ["createGroup"],
     mutationFn: async () => {
       await fetch(`/api/groups/${user!.id}`, {
@@ -27,6 +27,7 @@ export function useCreateGroup({
       setIsCreateGroupOpen(false);
       setGroupName("");
       queryClient.invalidateQueries({ queryKey: ["groups"] });
+      toast.success("Grupo criado com sucesso");
     },
   });
   const user = useStore((state) => state.user);
@@ -34,11 +35,10 @@ export function useCreateGroup({
   const handleCreateGroup = async () => {
     try {
       createGroup();
-      toast.success("Grupo criado com sucesso");
     } catch (error) {
       toast.error("Erro ao criar grupo");
     }
   };
 
-  return { groupName, setGroupName, handleCreateGroup };
+  return { groupName, setGroupName, handleCreateGroup, isCreatingGroup };
 }

@@ -18,13 +18,22 @@ export default function Register() {
 
     const { email, password, name } = data;
 
+    const userExists = await prisma.user.findUnique({
+      where: {
+        email,
+      },
+    });
+
+    if (userExists) {
+      return { error: "Email já cadastrado" };
+    }
+
     const { data: user, error } = await supabase.auth.signUp({
       email,
       password,
     });
 
     if (error) {
-      console.log(error);
       return { error: "Não foi possível criar o usuário" };
     }
 
