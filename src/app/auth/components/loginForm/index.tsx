@@ -15,7 +15,7 @@ import { useLoginForm } from "./useLoginForm";
 import { useActionState } from "react";
 import { toast } from "react-toastify";
 import { LoaderCircle } from "lucide-react";
-import { signIn } from "next-auth/react";
+import { createClient } from "@/utils/supabase/client";
 
 export function LoginForm({
   className,
@@ -24,21 +24,16 @@ export function LoginForm({
 }: React.ComponentProps<"div"> & {
   loginAction: (
     formData: FormData
-  ) => Promise<null | undefined | { error: string } | { success: string }>;
+  ) => Promise<null | undefined | { error: string } | { accessToken: string }>;
 }) {
   const { errors, register } = useLoginForm();
-
+  const supabase = createClient();
   const [, dispatchAction, isPending] = useActionState(
     async (_previousData: any, formData: FormData) => {
       const response = await loginAction(formData);
 
       if (response && "error" in response) {
         toast.error(response.error);
-      }
-
-      if (response && "success" in response) {
-        toast.success(response.success);
-        window.location.href = "/auth/login";
       }
     },
     null
@@ -60,7 +55,9 @@ export function LoginForm({
                   className="w-full"
                   onClick={(e) => {
                     e.preventDefault();
-                    signIn("google");
+                    supabase.auth.signInWithOAuth({
+                      provider: "google",
+                    });
                   }}
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">

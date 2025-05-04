@@ -1,23 +1,37 @@
 "use client";
 
-import { Group, Message } from "@/@types/chat";
 import { useState, useEffect } from "react";
 import useStore from "@/store";
+import { Group } from "@prisma/client";
+import { useQuery } from "@tanstack/react-query";
 
 export function useSideBar() {
+  const { isPending } = useQuery({
+    queryKey: ["groups"],
+    queryFn: () => fetchGroups(),
+  });
+
+  const { refetch: refetchGroupMessages } = useQuery({
+    queryKey: ["groupMessages"],
+    queryFn: () => fetchGroupMessages(),
+    enabled: false,
+  });
+
   const [mobileView, setMobileView] = useState(false);
   const [isSearchVisible, setIsSearchVisible] = useState(false);
   const [isCreateGroupModalOpen, setIsCreateGroupModalOpen] = useState(false);
+  const userId = useStore((state) => state.user?.id);
+  const setGroups = useStore((state) => state.setGroups);
   const showSidebar = useStore((state) => state.showSidebar);
   const setShowSidebar = useStore((state) => state.setShowSidebar);
   const selectedGroup = useStore((state) => state.selectedGroup);
   const setSelectedGroup = useStore((state) => state.setSelectedGroup);
   const groups = useStore((state) => state.groups);
-  const fetchGroupMessages = useStore((state) => state.fetchGroupMessages);
+  const setGroupMessages = useStore((state) => state.setGroupMessages);
 
-  const handleSelectGroup = (group: Group) => {
+  const handleSelectGroup = async (group: Group) => {
     setSelectedGroup(group);
-    fetchGroupMessages(group.id);
+    refetchGroupMessages();
 
     if (mobileView) {
       setShowSidebar(false);
@@ -36,6 +50,20 @@ export function useSideBar() {
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
+  const fetchGroups = async () => {
+    const response = await fetch("/api/groups?userId=" + userId);
+    const data = await response.json();
+    setGroups(data);
+    return data;
+  };
+
+  const fetchGroupMessages = async () => {
+    const response = await fetch(`/api/messages?groupId=${selectedGroup?.id}`);
+    const data = await response.json();
+    setGroupMessages(data);
+    return data;
+  };
+
   return {
     mobileView,
     showSidebar,
@@ -47,5 +75,6 @@ export function useSideBar() {
     setIsSearchVisible,
     isCreateGroupModalOpen,
     setIsCreateGroupModalOpen,
+    isLoading: isPending,
   };
 }

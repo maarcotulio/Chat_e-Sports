@@ -1,18 +1,17 @@
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import useStore from "@/store";
 import { Loader2, LogOut, Trash2, UserPlus2 } from "lucide-react";
 import ListMembers from "./components/listMembers";
-import { useEffect, useState } from "react";
+
 import { Avatar } from "@/components/ui/avatar";
 import { AvatarFallback } from "@/components/ui/avatar";
 import AddUser from "./components/addUser";
-import { toast } from "react-toastify";
+import { useMoreDetails } from "./useMoreDetails";
+
 export default function MoreDetails({
   showDetails,
   setShowDetails,
@@ -20,35 +19,16 @@ export default function MoreDetails({
   showDetails: boolean;
   setShowDetails: (showDetails: boolean) => void;
 }) {
-  const [showAddUser, setShowAddUser] = useState(false);
-  const selectedGroup = useStore((state) => state.selectedGroup);
-  const fetchMembers = useStore((state) => state.fetchMembers);
-  const members = useStore((state) => state.members);
-  const user = useStore((state) => state.user);
-  useEffect(() => {
-    if (selectedGroup) {
-      fetchMembers(selectedGroup.id);
-    }
-  }, [selectedGroup]);
-
-  const isAdmin = selectedGroup?.admin === user?.id;
-
-  const deleteOrLeaveGroup = async (groupId: string) => {
-    await fetch(`/api/groups/${user?.id}/${groupId}`, {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (isAdmin) {
-      toast.success("Grupo deletado com sucesso");
-    } else {
-      toast.success("Você saiu do grupo com sucesso");
-    }
-
-    setShowDetails(false);
-  };
+  const {
+    selectedGroup,
+    members,
+    isAdmin,
+    showAddUser,
+    setShowAddUser,
+    deleteOrLeaveGroup,
+  } = useMoreDetails({
+    setShowDetails,
+  });
 
   return (
     <>

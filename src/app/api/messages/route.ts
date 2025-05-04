@@ -1,12 +1,14 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { supabase } from "@/lib/supabase";
+import { createClient } from "@/utils/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
-  const session = await auth();
+  const supabase = await createClient();
+  const { error } = await supabase.auth.getUser();
 
-  if (!session) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  if (error) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
   const messages = await prisma.message.findMany({
@@ -23,16 +25,17 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await auth();
+  const supabase = await createClient();
+  const { error } = await supabase.auth.getUser();
 
-  if (!session) {
-    return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+  if (error) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  const { content, groupId, userId } = await req.json();
+  const { content, groupId, userId, id } = await req.json();
 
   const newMessage = await prisma.message.create({
-    data: { content, groupId, userId },
+    data: { content, groupId, userId, id },
   });
 
   return NextResponse.json(newMessage);

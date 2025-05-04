@@ -4,63 +4,51 @@ import { GroupMember, Group, Message, User } from "@prisma/client";
 export type Store = {
   showSidebar: boolean;
   setShowSidebar: (showSidebar: boolean) => void;
+
   selectedGroup: Group | null;
   setSelectedGroup: (selectedGroup: Group | null) => void;
+
   groups: Group[];
-  fetchGroups: (userId: string) => Promise<void>;
-  groupMessages: Record<string, Message[]>;
-  fetchGroupMessages: (groupId: string) => Promise<void>;
+  setGroups: (groups: Group[]) => void;
+
+  groupMessages: Message[];
+  setGroupMessages: (groupMessages: Message[]) => void;
+
   user: User | null;
-  fetchUser: () => Promise<void>;
+  setUser: (user: User) => void;
+
   members: (GroupMember & {
     user: { id: string; name: string; image: string | null };
   })[];
-  fetchMembers: (groupId: string) => Promise<void>;
+  setMembers: (
+    members: (GroupMember & {
+      user: { id: string; name: string; image: string | null };
+    })[]
+  ) => void;
 };
 
 const useStore = create<Store>((set) => ({
   showSidebar: true,
   setShowSidebar: (showSidebar: boolean) => set({ showSidebar }),
+
   selectedGroup: null,
   setSelectedGroup: (selectedGroup: Group | null) => set({ selectedGroup }),
 
   groups: [],
-  fetchGroups: async (userId: string) => {
-    const response = await fetch("/api/groups?userId=" + userId);
+  setGroups: (groups: Group[]) => set({ groups }),
 
-    const data = await response.json();
-
-    set({ groups: data });
-  },
-
-  groupMessages: {},
-  fetchGroupMessages: async (groupId: string) => {
-    const response = await fetch(`/api/messages?groupId=${groupId}`);
-    const data = await response.json();
-
-    set((state) => ({
-      groupMessages: {
-        ...state.groupMessages,
-        [groupId]: data,
-      },
-    }));
-  },
+  groupMessages: [],
+  setGroupMessages: (groupMessages: Message[]) => set({ groupMessages }),
 
   user: null,
-  fetchUser: async () => {
-    const response = await fetch("/api/user");
-    const data = await response.json();
-
-    set({ user: data });
-  },
+  setUser: (user: User) => set({ user }),
 
   members: [],
-  fetchMembers: async (groupId: string) => {
-    const response = await fetch(`/api/members/${groupId}`);
-    const data = await response.json();
-
-    set({ members: data });
-  },
+  setMembers: (
+    members: (GroupMember & {
+      user: { id: string; name: string; image: string | null };
+    })[]
+  ) => set({ members }),
 }));
 
 export default useStore;

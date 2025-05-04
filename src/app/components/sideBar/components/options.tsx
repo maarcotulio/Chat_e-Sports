@@ -1,4 +1,3 @@
-import { signOut } from "next-auth/react";
 import { LogOut, MoreVertical, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -9,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { CreateGroup } from "./createGroup";
+import { supabase } from "@/lib/supabase";
 
 export default function Options() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
@@ -29,7 +29,10 @@ export default function Options() {
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex justify-between gap-2 hover:cursor-pointer"
-            onClick={() => signOut()}
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.href = "/auth/login";
+            }}
           >
             <button className="hover:cursor-pointer">Sair</button>
             <LogOut size={20} />

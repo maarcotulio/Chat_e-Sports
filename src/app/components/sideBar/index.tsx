@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Search, Plus } from "lucide-react";
+import { X, Search, Plus, Loader2 } from "lucide-react";
 import { useSideBar } from "./useSideBar";
 import ListGroups from "./components/listGroups";
 import { Input } from "@/app/auth/components/ui/input";
@@ -10,6 +10,7 @@ import { CreateGroup } from "./components/createGroup";
 
 export default function SideBar() {
   const {
+    isLoading,
     showSidebar,
     selectedGroup,
     handleSelectGroup,
@@ -64,22 +65,30 @@ export default function SideBar() {
               )}
             </div>
 
-            {groups.length > 0 ? (
-              <ListGroups
-                groups={groups}
-                selectedGroup={selectedGroup}
-                handleSelectGroup={handleSelectGroup}
-              />
-            ) : (
-              <div className="flex flex-col items-center justify-center h-full gap-2 ">
-                <div
-                  className="rounded-full border border-gray-400 border-dashed flex items-center justify-center gap-2 p-2  flex-col hover:cursor-pointer"
-                  onClick={() => setIsCreateGroupModalOpen(true)}
-                >
-                  <Plus size={24} />
-                </div>
-                <p className="text-gray-400">Criar grupo</p>
+            {isLoading ? (
+              <div className="flex items-center justify-center h-full">
+                <Loader2 className="w-10 h-10 animate-spin" />
               </div>
+            ) : (
+              <>
+                {groups.length > 0 ? (
+                  <ListGroups
+                    groups={groups}
+                    selectedGroup={selectedGroup}
+                    handleSelectGroup={handleSelectGroup}
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center h-full gap-2 ">
+                    <div
+                      className="rounded-full border border-gray-400 border-dashed flex items-center justify-center gap-2 p-2  flex-col hover:cursor-pointer"
+                      onClick={() => setIsCreateGroupModalOpen(true)}
+                    >
+                      <Plus size={24} />
+                    </div>
+                    <p className="text-gray-400">Criar grupo</p>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </>

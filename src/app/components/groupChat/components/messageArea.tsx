@@ -36,8 +36,11 @@ export default function MessageArea({ messages }: { messages: Message[] }) {
               {!isCurrentUser && (
                 <div className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-cyan-400 font-bold flex-shrink-0 mr-2">
                   <Avatar>
-                    <AvatarImage src={user!.image || undefined} />
-                    <AvatarFallback>{user!.name?.charAt(0)}</AvatarFallback>
+                    {user?.image ? (
+                      <AvatarImage src={user.image} />
+                    ) : (
+                      <AvatarFallback>{user!.name?.charAt(0)}</AvatarFallback>
+                    )}
                   </Avatar>
                 </div>
               )}

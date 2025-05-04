@@ -8,6 +8,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import useStore from "@/store";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
 export default function AddUser({
@@ -19,23 +20,34 @@ export default function AddUser({
   setShowAddUser: (showAddUser: boolean) => void;
   setShowDetails: (showDetails: boolean) => void;
 }) {
-  const [email, setEmail] = useState("");
+  const queryClient = useQueryClient();
   const userId = useStore((state) => state.user?.id);
-  const selectedGroup = useStore((state) => state.selectedGroup);
-  const addUser = async () => {
-    const response = await fetch(
-      `/api/groups/${userId}/${selectedGroup?.id}/addUser`,
-      {
-        method: "POST",
-        body: JSON.stringify({ email }),
+  const { mutate: addUser } = useMutation({
+    mutationKey: ["addUser"],
+    mutationFn: async () => {
+      const response = await fetch(
+        `/api/groups/${userId}/${selectedGroup?.id}/addUser`,
+        {
+          method: "POST",
+          body: JSON.stringify({ email }),
+        }
+      );
+      if (response.ok) {
+        toast.success("Membro adicionado com sucesso");
+      } else {
+        toast.error("Erro ao adicionar membro");
       }
-    );
-    const data = await response.json();
-    if (response.ok) {
-      toast.success(data.message);
-    } else {
-      toast.error(data.message);
-    }
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
+      queryClient.invalidateQueries({ queryKey: ["members"] });
+    },
+  });
+  const [email, setEmail] = useState("");
+  const selectedGroup = useStore((state) => state.selectedGroup);
+  const handleAddUser = async () => {
+    addUser();
   };
 
   return (
@@ -56,7 +68,7 @@ export default function AddUser({
           />
           <Button
             onClick={() => {
-              addUser();
+              handleAddUser();
               setShowAddUser(false);
               setShowDetails(false);
             }}

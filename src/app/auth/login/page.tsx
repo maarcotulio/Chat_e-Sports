@@ -1,27 +1,33 @@
 import { LoginForm } from "@/app/auth/components/loginForm";
-import { signIn } from "@/auth";
+import { loginFormSchema } from "@/schemas/auth";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+
 export default function LoginPage() {
   const loginAction = async (formData: FormData) => {
     "use server";
+    const supabase = await createClient();
 
-    const { email, password } = Object.fromEntries(formData);
-    try {
-      const result = await signIn("credentials", {
-        email,
-        password,
-        redirectTo: "/",
-        redirect: false,
-      });
+    const { success, data } = loginFormSchema.safeParse(
+      Object.fromEntries(formData)
+    );
 
-      if (result?.error) {
-        return { error: "Erro ao fazer login: " + result.error };
-      }
+    if (!success) {
+      return null;
+    }
 
-      return { success: "Login realizado com sucesso" };
-    } catch (error) {
-      console.error("Unexpected error:", error);
+    const { email, password } = data;
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (error) {
       return { error: "Erro ao fazer login" };
     }
+
+    redirect("/");
   };
 
   return (

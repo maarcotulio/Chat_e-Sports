@@ -1,11 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { RegisterForm } from "../components/registerForm";
 import { registerFormSchema } from "@/schemas/auth";
-import bcrypt from "bcryptjs";
+import { createClient } from "@/utils/supabase/server";
 
 export default function Register() {
   async function registerAction(formData: FormData) {
     "use server";
+    const supabase = await createClient();
 
     const { success, data } = registerFormSchema.safeParse(
       Object.fromEntries(formData)
@@ -17,19 +18,22 @@ export default function Register() {
 
     const { email, password, name } = data;
 
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    const { data: user, error } = await supabase.auth.signUp({
+      email,
+      password,
+    });
 
-    if (existingUser) {
-      return { error: "Email já cadastrado" };
+    if (error) {
+      console.log(error);
+      return { error: "Não foi possível criar o usuário" };
     }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
 
     await prisma.user.create({
       data: {
+        id: user.user?.id,
         email,
-        password: hashedPassword,
         name,
+        image: user.user?.user_metadata.avatar_url || "",
       },
     });
 

@@ -8,8 +8,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/app/auth/components/ui/input";
 import { Button } from "@/app/auth/components/ui/button";
-import { useState } from "react";
-import useStore from "@/store";
+
+import { useCreateGroup } from "./useCreateGroup";
 
 export function CreateGroup({
   isCreateGroupOpen,
@@ -18,23 +18,10 @@ export function CreateGroup({
   isCreateGroupOpen: boolean;
   setIsCreateGroupOpen: (isOpen: boolean) => void;
 }) {
-  const [groupName, setGroupName] = useState("");
-  const user = useStore((state) => state.user);
-
-  const handleCreateGroup = async () => {
-    const response = await fetch(`/api/groups/${user!.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ name: groupName }),
-    });
-
-    if (response.ok) {
-      setIsCreateGroupOpen(false);
-      setGroupName("");
-    }
-  };
+  const { groupName, setGroupName, handleCreateGroup } = useCreateGroup({
+    isCreateGroupOpen,
+    setIsCreateGroupOpen,
+  });
 
   return (
     <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>

@@ -1,18 +1,20 @@
-import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
+import { createClient } from "@/utils/supabase/server";
 
 export async function DELETE(
   request: Request,
   { params }: { params: { userId: string; groupId: string } }
 ) {
-  const { userId, groupId } = await params;
+  const supabase = await createClient();
 
-  const session = await auth();
+  const { error } = await supabase.auth.getUser();
 
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (error) {
+    return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
+
+  const { userId, groupId } = await params;
 
   const group = await prisma.group.findUnique({
     where: {
