@@ -1,6 +1,6 @@
 "use client";
 
-import { X, Search, Plus, Loader2 } from "lucide-react";
+import { X, Search, Plus, Loader2, Gamepad2 } from "lucide-react";
 import { useSideBar } from "./useSideBar";
 import ListGroups from "./components/listGroups";
 import { Input } from "@/app/auth/components/ui/input";
@@ -21,6 +21,7 @@ export default function SideBar() {
     mobileView,
     isCreateGroupModalOpen,
     setIsCreateGroupModalOpen,
+    handleMatches,
   } = useSideBar();
 
   return (
@@ -42,6 +43,12 @@ export default function SideBar() {
                     onClick={() => setIsSearchVisible(!isSearchVisible)}
                   >
                     <Search size={20} />
+                  </button>
+                  <button
+                    className="p-2 rounded-full hover:bg-gray-800 text-white hover:cursor-pointer"
+                    onClick={() => handleMatches()}
+                  >
+                    <Gamepad2 size={20} />
                   </button>
                   <Options />
                   {mobileView && (

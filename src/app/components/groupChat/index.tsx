@@ -6,6 +6,7 @@ import MessageArea from "./components/messageArea";
 import useGroupChat from "./useGroupChat";
 import MoreDetails from "./components/moreDetails";
 import { Group } from "@prisma/client";
+import Matches from "@/app/matches/page";
 export default function GroupChat() {
   const {
     mobileView,
@@ -19,13 +20,14 @@ export default function GroupChat() {
     showDetails,
     setShowDetails,
     isLoadingGroupMessages,
+    isMatchesOpen,
   } = useGroupChat();
 
   const group = selectedGroup as Group | null;
 
   return (
     <div className="flex-1 flex flex-col bg-black">
-      {selectedGroup !== null ? (
+      {selectedGroup !== null && !isMatchesOpen ? (
         <>
           {selectedGroup && (
             <>
@@ -102,21 +104,31 @@ export default function GroupChat() {
           )}
         </>
       ) : (
-        <div className="w-full h-full flex flex-col">
-          {mobileView && !showSidebar && (
-            <button
-              className="mr-2 p-2 rounded-full hover:bg-gray-800 text-white"
-              onClick={() => setShowSidebar(true)}
-            >
-              <ChevronLeft size={20} />
-            </button>
-          )}
-          <div className="flex-1 flex items-center justify-center bg-black">
-            <p className="text-gray-500">
-              Selecione um grupo para iniciar o chat
-            </p>
+        <>
+          <div className="w-full h-full flex flex-col">
+            {isMatchesOpen ? (
+              <div className="flex items-center justify-center h-screen">
+                <Matches />
+              </div>
+            ) : (
+              <>
+                {mobileView && !showSidebar && (
+                  <button
+                    className="mr-2 p-2 rounded-full hover:bg-gray-800 text-white"
+                    onClick={() => setShowSidebar(true)}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+                <div className="flex-1 flex items-center justify-center bg-black">
+                  <p className="text-gray-500">
+                    Selecione um grupo para iniciar o chat
+                  </p>
+                </div>
+              </>
+            )}
           </div>
-        </div>
+        </>
       )}
     </div>
   );

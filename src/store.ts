@@ -25,6 +25,9 @@ export type Store = {
       user: { id: string; name: string; image: string | null };
     })[]
   ) => void;
+
+  isMatchesOpen: boolean;
+  setIsMatchesOpen: (isMatchesOpen: boolean) => void;
 };
 
 const useStore = create<Store>((set) => ({
@@ -49,6 +52,9 @@ const useStore = create<Store>((set) => ({
       user: { id: string; name: string; image: string | null };
     })[]
   ) => set({ members }),
+
+  isMatchesOpen: false,
+  setIsMatchesOpen: (isMatchesOpen: boolean) => set({ isMatchesOpen }),
 }));
 
 export default useStore;

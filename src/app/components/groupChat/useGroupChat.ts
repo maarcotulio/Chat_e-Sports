@@ -38,6 +38,7 @@ export default function useGroupChat() {
   ) as Group | null;
   const currentUser = useStore((state) => state.user);
   const setGroupMessages = useStore((state) => state.setGroupMessages);
+  const isMatchesOpen = useStore((state) => state.isMatchesOpen);
 
   const { data: messagesData, isPending: isLoadingGroupMessages } = useQuery({
     queryKey: ["groupMessages", selectedGroup?.id],
@@ -132,5 +133,6 @@ export default function useGroupChat() {
     showDetails,
     setShowDetails,
     isLoadingGroupMessages,
+    isMatchesOpen,
   };
 }

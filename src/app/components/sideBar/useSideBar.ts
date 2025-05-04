@@ -28,6 +28,8 @@ export function useSideBar() {
   const setSelectedGroup = useStore((state) => state.setSelectedGroup);
   const groups = useStore((state) => state.groups);
   const setGroupMessages = useStore((state) => state.setGroupMessages);
+  const isMatchesOpen = useStore((state) => state.isMatchesOpen);
+  const setIsMatchesOpen = useStore((state) => state.setIsMatchesOpen);
 
   const handleSelectGroup = async (group: Group) => {
     setSelectedGroup(group);
@@ -60,8 +62,16 @@ export function useSideBar() {
   const fetchGroupMessages = async () => {
     const response = await fetch(`/api/messages?groupId=${selectedGroup?.id}`);
     const data = await response.json();
+    setIsMatchesOpen(false);
     setGroupMessages(data);
     return data;
+  };
+
+  const handleMatches = () => {
+    if (mobileView) {
+      setShowSidebar(false);
+    }
+    setIsMatchesOpen(!isMatchesOpen);
   };
 
   return {
@@ -75,6 +85,7 @@ export function useSideBar() {
     setIsSearchVisible,
     isCreateGroupModalOpen,
     setIsCreateGroupModalOpen,
+    handleMatches,
     isLoading: isPending,
   };
 }
