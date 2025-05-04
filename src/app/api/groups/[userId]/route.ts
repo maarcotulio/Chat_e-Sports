@@ -26,7 +26,6 @@ export async function POST(
     const group = await prisma.group.create({
       data: {
         name,
-        icon: "👥",
         lastMessage: "",
         members: {
           create: {

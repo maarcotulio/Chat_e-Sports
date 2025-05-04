@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Group } from "@prisma/client";
 
 export default function ListGroups({
@@ -20,7 +21,10 @@ export default function ListGroups({
           onClick={() => handleSelectGroup(group)}
         >
           <div className="w-12 h-12 rounded-full bg-gray-800 flex items-center justify-center text-gray-100 font-bold flex-shrink-0">
-            {group.icon}
+            <Avatar className="w-full h-full">
+              <AvatarImage src={group?.icon || ""} alt="Group image" />
+              <AvatarFallback>👥</AvatarFallback>
+            </Avatar>
           </div>
           <div className="ml-3 flex-1 overflow-hidden">
             <div className="flex justify-between items-center">

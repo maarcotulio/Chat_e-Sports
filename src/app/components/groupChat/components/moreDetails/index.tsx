@@ -4,13 +4,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Loader2, LogOut, Trash2, UserPlus2 } from "lucide-react";
+import { ImageIcon, Loader2, LogOut, Trash2, UserPlus2 } from "lucide-react";
 import ListMembers from "./components/listMembers";
 
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { AvatarFallback } from "@/components/ui/avatar";
 import AddUser from "./components/addUser";
 import { useMoreDetails } from "./useMoreDetails";
+import ChangeAvatar from "@/app/components/changeAvatar";
 
 export default function MoreDetails({
   showDetails,
@@ -27,6 +28,9 @@ export default function MoreDetails({
     setShowAddUser,
     deleteOrLeaveGroup,
     isDeletingGroup,
+    setShowChangeGroupAvatar,
+    showChangeGroupAvatar,
+    userId,
   } = useMoreDetails({
     setShowDetails,
   });
@@ -47,9 +51,34 @@ export default function MoreDetails({
           <DialogHeader>
             <DialogTitle>Detalhes do grupo</DialogTitle>
             <div className="flex flex-col my-8 items-center justify-center gap-2">
-              <div className="w-15 h-15 rounded-full bg-gray-800 flex items-center justify-center text-gray-100 font-bold">
-                {selectedGroup?.icon}
+              <div className="relative w-28 h-28 group cursor-pointer">
+                <Avatar className="w-full h-full">
+                  <AvatarImage
+                    src={selectedGroup?.icon || ""}
+                    alt="Group image"
+                  />
+                  <AvatarFallback>👥</AvatarFallback>
+                </Avatar>
+                <div
+                  className="
+          absolute inset-0 
+          bg-black bg-opacity-50 
+          flex items-center justify-center 
+          text-white font-
+          text-sm flex gap-2 flex-col
+          opacity-0 group-hover:opacity-100 
+          transition-opacity duration-200
+        "
+                  aria-label="Mudar a imagem do grupo"
+                  onClick={() => {
+                    setShowChangeGroupAvatar(true);
+                  }}
+                >
+                  <ImageIcon />
+                  Mudar a imagem do grupo
+                </div>
               </div>
+
               <div className="flex flex-col">
                 <h1 className="text-gray-100 font-bold text-center">
                   {selectedGroup?.name}
@@ -122,6 +151,15 @@ export default function MoreDetails({
           showAddUser={showAddUser}
           setShowAddUser={setShowAddUser}
           setShowDetails={setShowDetails}
+        />
+      )}
+
+      {showChangeGroupAvatar && (
+        <ChangeAvatar
+          open={showChangeGroupAvatar}
+          setOpen={setShowChangeGroupAvatar}
+          groupId={selectedGroup?.id}
+          userId={userId}
         />
       )}
     </>

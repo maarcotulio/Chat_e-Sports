@@ -46,6 +46,7 @@ export function useMoreDetails({
   });
 
   const [showAddUser, setShowAddUser] = useState(false);
+  const [showChangeGroupAvatar, setShowChangeGroupAvatar] = useState(false);
   const selectedGroup = useStore((state) => state.selectedGroup);
   const setMembers = useStore((state) => state.setMembers);
   const members = useStore((state) => state.members);
@@ -78,5 +79,8 @@ export function useMoreDetails({
     setShowAddUser,
     deleteOrLeaveGroup,
     isDeletingGroup,
+    showChangeGroupAvatar,
+    setShowChangeGroupAvatar,
+    userId: user!.id,
   };
 }

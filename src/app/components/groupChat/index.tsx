@@ -7,6 +7,7 @@ import useGroupChat from "./useGroupChat";
 import MoreDetails from "./components/moreDetails";
 import { Group } from "@prisma/client";
 import Matches from "@/app/matches/page";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 export default function GroupChat() {
   const {
     mobileView,
@@ -52,7 +53,13 @@ export default function GroupChat() {
                       onClick={() => setShowDetails(true)}
                     >
                       <div className="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-100 font-bold">
-                        {group?.icon}
+                        <Avatar className="w-full h-full">
+                          <AvatarImage
+                            src={group?.icon || ""}
+                            alt="Group image"
+                          />
+                          <AvatarFallback>👥</AvatarFallback>
+                        </Avatar>
                       </div>
                       <div className="ml-3 flex-1">
                         <h2 className="font-medium text-white">

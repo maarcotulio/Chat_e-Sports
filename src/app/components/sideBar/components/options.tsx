@@ -1,4 +1,4 @@
-import { LogOut, MoreVertical, Plus } from "lucide-react";
+import { LogOut, MoreVertical, Plus, User } from "lucide-react";
 import { useState } from "react";
 
 import {
@@ -9,9 +9,13 @@ import {
 import { DropdownMenu } from "@/components/ui/dropdown-menu";
 import { CreateGroup } from "./createGroup";
 import { supabase } from "@/lib/supabase";
+import ChangeAvatar from "../../changeAvatar";
+import useStore from "@/store";
 
 export default function Options() {
   const [isCreateGroupOpen, setIsCreateGroupOpen] = useState(false);
+  const [isChangeUserAvatarOpen, setIsChangeUserAvatarOpen] = useState(false);
+  const userId = useStore((state) => state.user?.id) as string;
 
   return (
     <div className="flex items-center space-x-2">
@@ -26,6 +30,13 @@ export default function Options() {
           >
             <button className="hover:cursor-pointer">Criar grupo</button>
             <Plus size={20} />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => setIsChangeUserAvatarOpen(true)}
+            className="flex justify-between gap-2 hover:cursor-pointer"
+          >
+            <button className="hover:cursor-pointer">Trocar avatar</button>
+            <User size={20} />
           </DropdownMenuItem>
           <DropdownMenuItem
             className="flex justify-between gap-2 hover:cursor-pointer"
@@ -43,6 +54,12 @@ export default function Options() {
       <CreateGroup
         isCreateGroupOpen={isCreateGroupOpen}
         setIsCreateGroupOpen={setIsCreateGroupOpen}
+      />
+      <ChangeAvatar
+        open={isChangeUserAvatarOpen}
+        setOpen={setIsChangeUserAvatarOpen}
+        userId={userId}
+        setShowDetails={setIsCreateGroupOpen}
       />
     </div>
   );
