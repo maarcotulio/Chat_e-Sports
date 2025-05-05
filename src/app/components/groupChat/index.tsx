@@ -114,8 +114,18 @@ export default function GroupChat() {
         <>
           <div className="w-full h-full flex flex-col">
             {isMatchesOpen ? (
-              <div className="flex items-center justify-center h-screen">
-                <Matches />
+              <div className="flex flex-col  h-screen">
+                {mobileView && !showSidebar && (
+                  <button
+                    className="mr-2 p-2 rounded-full hover:bg-gray-800 text-white"
+                    onClick={() => setShowSidebar(true)}
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+                <div className="flex-1 flex items-center justify-center bg-black">
+                  <Matches />
+                </div>
               </div>
             ) : (
               <>
