@@ -46,7 +46,7 @@ export default function Register() {
       },
     });
 
-    return { success: "Usuário criado com sucesso" };
+    return { success: "Verifique seu email para ativar sua conta" };
   }
 
   return (
