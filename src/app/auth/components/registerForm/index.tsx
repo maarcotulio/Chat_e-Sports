@@ -51,7 +51,7 @@ export function RegisterForm({
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Crie uma conta</CardTitle>
           <CardDescription>
-            Crie uma conta com sua conta do Google
+            Crie uma conta com seu email e senha
           </CardDescription>
         </CardHeader>
         <CardContent>

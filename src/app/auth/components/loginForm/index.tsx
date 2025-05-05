@@ -44,16 +44,11 @@ export function LoginForm({
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Bem-vindo de volta</CardTitle>
-          <CardDescription>Faça login com sua conta do Google</CardDescription>
+          <CardDescription>Faça login com seu email e senha</CardDescription>
         </CardHeader>
         <CardContent>
           <form action={dispatchAction} noValidate>
             <div className="grid gap-6">
-              <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
-                <span className="bg-card text-muted-foreground relative z-10 px-2">
-                  Ou continue com
-                </span>
-              </div>
               <div className="grid gap-6">
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
