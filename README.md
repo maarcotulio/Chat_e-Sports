@@ -1,114 +1,96 @@
-
 # Chat e-Sports
-O Chat tem como intuito melhorar a experiência do usuário para saber quando será uma partida e também poder conversar com os amigos a respeito.
 
+**Enhance your user experience by knowing when matches will happen and chatting with friends about them.**
 
+- Live chat with friends during matches
+- User authentication and profiles
+- Avatar upload and storage
+- Responsive design for all devices
 
+## Tech Stack
+| Frontend | Backend | Database | APIs |
+|----------|---------|----------|------|
+| Next.js 14 + TypeScript | Next.js API Routes | Supabase PostgreSQL | PandaScore |
+| Tailwind CSS | Prisma ORM | Supabase Realtime | Supabase Auth |
 
-## Rodando o Projeto
-Esse projeto utiliza o banco de dados Supabase e a API pandaScore. Ambos são gratuitos para começo, e não precisam pagar para começar a usar, apenas é necessário criar uma conta.
+## Running the Project
 
-Primeiro clone o projeto
+This project uses **Supabase** (database + auth) and **PandaScore API**. Both are free for development - just create accounts.
 
+### 1. Clone the Repository
 ```bash
-  git clone https://github.com/maarcotulio/Chat_e-Sports
+git clone https://github.com/maarcotulio/Chat_e-Sports.git
+cd Chat_e-Sports
 ```
 
-Vá para o diretório do projeto
-
+### 2. Install Dependencies
 ```bash
-  cd Chat_e-Sports
+pnpm install
 ```
 
-Instale as dependencias
+### 3. Setup Environment (.env)
+Copy `.env.example` to `.env` and fill the values:
 
-```bash
-  pnpm install
-```
-
-### Preenchendo .env
-Crie um arquivo .env e utilize o .example.env de modelo. 
-
-#### Supabase
-
-Crie sua conta na plataforma, após isso crie sua organização, não é necessário mudar nenhuma configuração nesse momento. Vá em configurações do projeto e em Data API. Preencha a URL do projeto e a anon key em seu .env.
-
+#### Supabase Configuration
+1. Create account at [supabase.com](https://supabase.com)
+2. Create new project/organization
+3. Go to **Settings > API** → copy **Project URL** and **anon key**:
 ```env
-    NEXT_PUBLIC_SUPABASE_URL=URL_DO_PROJETO
-    NEXT_PUBLIC_SUPABASE_ANON_KEY=SUA_ANON_KEY
+NEXT_PUBLIC_SUPABASE_URL=your_project_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 ```
 
-Clique em "Connect" na parte superior da página copie sua Direct connection. Vá em ORMs utilize as informações para preencher o .env. Lembre de substituir o [YOUR_PASSWORD] pela senha do DB que você colocou ao criar sua organização.
-
+4. Go to **Settings > Database** → copy **Direct connection** and **Connection Pooler**:
 ```env
-    DATABASE_URL=""
-    DIRECT_URL=""
+DATABASE_URL="postgresql://[user]:[YOUR_PASSWORD]@[host]:[port]/[dbname]"
+DIRECT_URL="postgresql://[user]:[YOUR_PASSWORD]@[host]:[port]/[dbname]"
 ```
 
-#### PandaScore
-
-Crie uma conta no site. E copie seu Acess Token e preencha no .env.
-
+#### PandaScore API
+1. Create account at [pandascore.co](https://pandascore.co)
+2. Copy your **Access Token**:
 ```env
-    PANDASCORE_TOKEN=SEU_ACESS_TOKEN
+PANDASCORE_TOKEN=your_access_token
 ```
 
-### Configurando o DB
-Dentro da pasta do projeto execute os seguintes comandos.
-
+### 4. Database Setup
 ```bash
-    pnpm prisma db push
+pnpm prisma db push
 ```
 
-Vá no Supabase em Table Editor. Ative RLS para quase todas as tables exceto messages. E em messages ative o realtime. Vá em Storage, New Bucket, coloque o nome de avatar e coloque como **público**. 
+#### Supabase Configuration (Dashboard)
+1. **Table Editor**: Enable **RLS** on all tables except `messages`
+2. **messages table**: Enable **Realtime**
+3. **Storage** → Create bucket `avatar` → Set as **Public**
 
-Vá em SQL editor e no mais crie snippets para cada um desses código SQL abaixo e rode cada um deles.
+#### SQL Policies (run in Supabase SQL Editor)
+```sql
+-- Allow viewing messages
+GRANT SELECT ON messages TO anon, authenticated;
+```
 
 ```sql
-    -- Permite ver as messagens por usuarios
-    grant select on messages to anon, 
-authenticated;
-```
-
-```sql
-    -- Permite que usuários autenticados façam INSERT (upload) no bucket 'avatar'
+-- Avatar bucket policies for authenticated users
 CREATE POLICY "Allow authenticated insert on avatar"
-  ON storage.objects
-  FOR INSERT
-  TO authenticated
-  WITH CHECK (
-    bucket_id = 'avatar'
-  );
+  ON storage.objects FOR INSERT TO authenticated
+  WITH CHECK (bucket_id = 'avatar');
 
-```
+CREATE POLICY "Allow authenticated select on avatar" 
+  ON storage.objects FOR SELECT TO authenticated
+  USING (bucket_id = 'avatar');
 
-```sql
-    -- Permite que usuários autenticados façam SELECT (download/listagem) no bucket 'avatar'
-CREATE POLICY "Allow authenticated select on avatar"
-  ON storage.objects
-  FOR SELECT
-  TO authenticated
-  USING (
-    bucket_id = 'avatar'
-  );
-
-```
-
-```sql
-    -- Permite que usuários autenticados façam UPDATE (para upsert) no bucket 'avatar'
 CREATE POLICY "Allow authenticated update on avatar"
-  ON storage.objects
-  FOR UPDATE
-  TO authenticated
-  USING (
-    bucket_id = 'avatar'
-  );
-
+  ON storage.objects FOR UPDATE TO authenticated
+  USING (bucket_id = 'avatar');
 ```
 
-Finalmente agora podemos rodar o nosso projeto utilize o comando
-
+### 5. Run the Project
 ```bash
-    pnpm dev
+pnpm dev
 ```
 
+**Access: http://localhost:3000**
+
+[1](https://github.com/othneildrew/Best-README-Template)
+[2](https://www.alter-solutions.pt/blog/arquivos-readme)
+[3](https://github.com/danielfilh0/fincheck)
